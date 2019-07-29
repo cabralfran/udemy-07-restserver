@@ -5,6 +5,21 @@ process.env.PORT = process.env.PORT || 3000;
 // ambiente
 process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
+
+// vencimiento token
+
+// 60 segundos
+// 60 minutos
+// 24 horas
+// 30 dias
+
+process.env.CADUCIDAD_TOKEN = 60 * 60  * 24 * 30;  // un mes
+
+
+//secret key
+process.env.KEY_API = process.env.KEY_API || 'palabra-secreta';
+
+
 //bd
 let urlDB;
 

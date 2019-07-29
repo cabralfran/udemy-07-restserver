@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const Usuario = require('../models/usuario');
 
@@ -19,23 +20,26 @@ app.post('/login', (req, res) => {
         }
 
         if (!usuarioDB) {
-            return res.status(403).json({
+            return res.status(401).json({
                 ok: false,
                 err: 'El usuario o la contraseña son incorrectos'
             })
         }
 
         if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
-            return res.status(403).json({
+            return res.status(401).json({
                 ok: false,
                 err: 'El usuario o la contraseña son incorrectos'
             })
-        }
+        } 
 
+        let token =  jwt.sign({
+            usuario: usuarioDB
+        }, process.env.KEY_API , {expiresIn:  process.env.CADUCIDAD_TOKEN});   // ss * mm * hh * dd
         res.json({
             ok: true,
             usuario: usuarioDB,
-            token: '123'
+            token
         })
 
     })
