@@ -22,7 +22,7 @@ app.get('/usuario', function(req, res) {
         .exec((err, usuarios) => {
 
             if (err) {
-                return res.status(400).json({
+                return res.status(500).json({
                     ok: false,
                     err
                 });
@@ -55,7 +55,7 @@ app.get('/usuario/activo', function(req, res) {
         .exec((err, usuarios) => {
 
             if (err) {
-                return res.status(400).json({
+                return res.status(500).json({
                     ok: false,
                     err
                 });
@@ -86,7 +86,7 @@ app.post('/usuario', function(req, res) {
     usuario.save((err, usuarioDB) => {
 
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
                 ok: false,
                 err
             })
@@ -107,7 +107,7 @@ app.put('/usuario/:id', function(req, res) {
     Usuario.findByIdAndUpdate(id, body, { new: true /* retorna el dato actualizado*/ , runValidators: true /* para las valid del squema*/ }, (err, usuarioDB) => {
 
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
                 ok: false,
                 err
             })
@@ -129,7 +129,7 @@ app.delete('/usuario/:id', function(req, res) {
     Usuario.findByIdAndRemove(id, (err, usuarioDB) => {
 
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
                 ok: false,
                 err
             })
@@ -163,7 +163,7 @@ app.delete('/usuario/estado/:id', function(req, res) {
     Usuario.findByIdAndUpdate(id, estado, { new: true }, (err, usuarioDB) => {
 
         if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
                 ok: false,
                 err
             })
