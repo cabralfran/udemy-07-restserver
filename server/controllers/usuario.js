@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore')
 
 const Usuario = require('../models/usuario');
-const {verificaToken} = require('../middlewares/autenticacion');
+const { verificaToken, verificaAdminRol } = require('../middlewares/autenticacion');
 
 const app = express();
 
-app.get('/usuario', verificaToken, (req, res)  =>{
+app.get('/usuario', verificaToken, (req, res) => {
     //res.send('get usuario'); // html
     //  res.json('Hola mundo'); // json
 
@@ -40,7 +40,7 @@ app.get('/usuario', verificaToken, (req, res)  =>{
         });
 });
 
-app.get('/usuario/activo', verificaToken, (req, res) =>{
+app.get('/usuario/activo', verificaToken, (req, res) => {
     //res.send('get usuario'); // html
     //  res.json('Hola mundo'); // json
 
@@ -73,7 +73,7 @@ app.get('/usuario/activo', verificaToken, (req, res) =>{
         });
 });
 
-app.post('/usuario', verificaToken, (req, res) =>{
+app.post('/usuario', [verificaToken, verificaAdminRol], (req, res) => {
 
     let body = req.body;
 
@@ -101,7 +101,7 @@ app.post('/usuario', verificaToken, (req, res) =>{
     })
 });
 
-app.put('/usuario/:id', verificaToken, (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaAdminRol], (req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']); // solo deja los valores que se desean actualizar enviados en el body
 
@@ -124,7 +124,7 @@ app.put('/usuario/:id', verificaToken, (req, res) => {
 
 });
 
-app.delete('/usuario/:id', verificaToken, (req, res) =>{
+app.delete('/usuario/:id', [verificaToken, verificaAdminRol], (req, res) => {
 
     let id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, usuarioDB) => {
@@ -155,7 +155,7 @@ app.delete('/usuario/:id', verificaToken, (req, res) =>{
 });
 
 
-app.delete('/usuario/estado/:id', verificaToken, (req, res) => {
+app.delete('/usuario/estado/:id', [verificaToken, verificaAdminRol], (req, res) => {
 
     let id = req.params.id;
     let estado = {
