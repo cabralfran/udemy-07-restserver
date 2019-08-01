@@ -13,7 +13,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 // 24 horas
 // 30 dias
 
-process.env.CADUCIDAD_TOKEN = 60 * 60  * 24 * 30;  // un mes
+process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30; // un mes
 
 
 //secret key
@@ -33,3 +33,7 @@ if (process.env.NODE_ENV === 'dev') {
 }
 
 process.env.urlDB = urlDB;
+
+
+//google client
+process.env.CLIENT_ID = process.env.CLIENT_ID || '77104377812-f3pv19ka231gcb6ebicff1mc14q91itf.apps.googleusercontent.com';
