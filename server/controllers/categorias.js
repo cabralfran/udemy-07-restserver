@@ -95,7 +95,7 @@ app.post('/categoria', verificaToken, (req, res) => {
             });
         }
 
-        res.status(2001).json({
+        res.status(201).json({
             ok: true,
             categoria: categoriaDb
         })
