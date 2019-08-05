@@ -20,9 +20,10 @@ app.use(require('./controllers/index'));
 mongoose.connect(process.env.urlDB, { useNewUrlParser: true, useCreateIndex: true }, (err, res) => {
 
     if (err) {
-        throw new Error(err);
+        console.log('Error al conectarse a MongoDB: ', err);
+    } else {
+        console.log('base de datos online');
     }
-    console.log('base de datos online')
 });
 
 mongoose.set('useFindAndModify', false);

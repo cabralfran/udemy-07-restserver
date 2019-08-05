@@ -50,7 +50,6 @@ app.put('/upload/:tipo/:id', async(req, res) => {
         let extensionArchivo = file.name.split('.');
         extensionArchivo = extensionArchivo[extensionArchivo.length - 1];
         let extensionesPermitidas = ['png', 'jpg', 'gif', 'jepg'];
-
         if (extensionesPermitidas.indexOf(extensionArchivo) < 0) {
             return res.status(400).json({
                 ok: false,
@@ -59,10 +58,16 @@ app.put('/upload/:tipo/:id', async(req, res) => {
                 }
             });
         }
-
-        let usuario = await getUsuario(idUser, res);
+        let usuario = await getUsuario(id)
+            .then(user => {
+                return user;
+            })
+            .catch(error => {
+                throw error;
+            });
 
         let nombreArchivo = id + '-' + new Date().getMilliseconds() + '.' + extensionArchivo;
+
         file.mv(path.resolve(__dirname, '../uploads/' + tipo + '/' + nombreArchivo), async(err) => {
 
             if (err) {
@@ -71,53 +76,73 @@ app.put('/upload/:tipo/:id', async(req, res) => {
                     err
                 })
             }
-
             if (tipo === 'usuario') {
-                await actualizarImagenUsuario(usuario);
-                res.json({
-                    ok: true,
-                    message: "Archivo subido correctamente!!"
-                });
+                usuario.img = nombreArchivo;
+                usuario = await actualizarImagenUsuario(usuario)
+                    .then(user => {
+                        res.json({
+                            ok: true,
+                            usuario,
+                            message: "Archivo subido correctamente!!"
+                        });
+                    })
+                    .catch(error => {
+                        return res.status(500).json({
+                            ok: false,
+                            err: error
+                        })
+                    });
             }
         });
     } catch (err) {
         return res.status(500).json({
             ok: false,
-            err
+            err: {
+                message: err.message
+            }
         })
     }
 
 });
 
 
-function getUsuario(idUser) {
-
-    Usuario.findById(idUsuario, (err, usuarioDB) => {
-        if (err) {
-            throw err;
-        }
-
-        if (!usuarioDB) {
-            console.log('asd');
-            throw new Error('No existe el usuario')
-        }
-
-        return usuarioDB;
-    });
-
+async function getUsuario(id) {
+    try {
+        let usuario = await Usuario.findById(id)
+            .then(function(user) {
+                if (!user) {
+                    throw new Error('El usuario no existe');
+                } else {
+                    return user;
+                }
+            })
+            .catch(function(err) {
+                throw err;
+            });
+        return usuario;
+    } catch (err) {
+        throw err
+    }
 }
 
-function actualizarImagenUsuario(usuario) {
-
-    usuario.img = nombreArchivo;
-
-    usuario.save((err, usuarioDB) => {
-
-        if (err) {
-            throw err
-        }
-
-    });
+async function actualizarImagenUsuario(usuario) {
+    try {
+        usuario = await Usuario.findByIdAndUpdate('usuario._id', usuario)
+            .then(function(user) {
+                if (!user) {
+                    throw new Error('No se pudo actualizar la imagen del usuario');
+                } else {
+                    return user;
+                }
+            })
+            .catch(function(err) {
+                throw err;
+            });
+        return usuario;
+    } catch (err) {
+        console.log('ERRORRRRRRRRRRRRR');
+        throw err;
+    }
 
 }
 
