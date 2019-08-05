@@ -1,8 +1,10 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const Usuario = require('../models/usuario');
+const Producto = require('../models/producto');
 const app = express();
 const path = require('path');
+const fs = require('fs');
 
 // default options
 app.use(fileUpload());
@@ -13,6 +15,8 @@ app.put('/upload/:tipo/:id', async(req, res) => {
         let tipo = req.params.tipo;
         let id = req.params.id;
         let tiposValidos = ['producto', 'usuario'];
+        let usuario;
+        let producto;
         if (!tipo) {
             return res.status(400).json({
                 ok: false,
@@ -58,13 +62,29 @@ app.put('/upload/:tipo/:id', async(req, res) => {
                 }
             });
         }
-        let usuario = await getUsuario(id)
+        let img;
+        if (tipo === 'usuario') {
+            usuario = await getUsuario(id)
             .then(user => {
+                img= '../uploads/'+tipo+'/'+user.img;
                 return user;
             })
             .catch(error => {
                 throw error;
             });
+        }
+        else if (tipo === 'producto') {
+            producto = await getProducto(id)
+            .then(p => {
+                img= '../uploads/'+tipo+'/'+p.img;
+                return p;
+            })
+            .catch(error => {
+                throw error;
+            });
+        }
+
+        await borrarImgenExistente(img);
 
         let nombreArchivo = id + '-' + new Date().getMilliseconds() + '.' + extensionArchivo;
 
@@ -89,10 +109,35 @@ app.put('/upload/:tipo/:id', async(req, res) => {
                     .catch(error => {
                         return res.status(500).json({
                             ok: false,
-                            err: error
+                            err:{
+                                message:error.message
+                            }
                         })
                     });
             }
+
+            if (tipo === 'producto') {
+                producto.img = nombreArchivo;
+                producto = await actualizarImagenProdcuto(producto)
+                    .then(user => {
+                        res.json({
+                            ok: true,
+                            producto,
+                            message: "Archivo subido correctamente!!"
+                        });
+                    })
+                    .catch(error => {
+                        console.log('error: ', error);
+                        return res.status(500).json({
+                            ok: false,
+                            err:{
+                                message:error.message
+                            }
+                        })
+                    });
+            }
+
+
         });
     } catch (err) {
         return res.status(500).json({
@@ -127,7 +172,7 @@ async function getUsuario(id) {
 
 async function actualizarImagenUsuario(usuario) {
     try {
-        usuario = await Usuario.findByIdAndUpdate('usuario._id', usuario)
+        usuario = await Usuario.findByIdAndUpdate(usuario._id, usuario)
             .then(function(user) {
                 if (!user) {
                     throw new Error('No se pudo actualizar la imagen del usuario');
@@ -140,11 +185,63 @@ async function actualizarImagenUsuario(usuario) {
             });
         return usuario;
     } catch (err) {
-        console.log('ERRORRRRRRRRRRRRR');
         throw err;
     }
 
 }
 
+
+async function getProducto(id) {
+    try {
+        let producto = await Producto.findById(id)
+            .then(function(p) {
+                if (!p) {
+                    throw new Error('El producto no existe');
+                } else {
+                    return p;
+                }
+            })
+            .catch(function(err) {
+                throw err;
+            });
+        return producto;
+    } catch (err) {
+        throw err
+    }
+}
+
+
+async function actualizarImagenProdcuto(producto) {
+    try {
+        producto = await Producto.findByIdAndUpdate(producto._id, producto)
+            .then(function(p) {
+                if (!p) {
+                    throw new Error('No se pudo actualizar la imagen del producto');
+                } else {
+                    return p;
+                }
+            })
+            .catch(function(err) {
+                throw err;
+            });
+            console.log('producto:', producto);
+        return producto;
+    } catch (err) {
+        throw err;
+    }
+
+}
+function borrarImgenExistente(img){
+    try{
+        let pathImagen= path.resolve(__dirname,img);
+        if(fs.existsSync(pathImagen)){
+            fs.unlinkSync(pathImagen);
+        }
+    }catch(err){
+        throw err;
+    }
+   
+
+}
 
 module.exports = app;
