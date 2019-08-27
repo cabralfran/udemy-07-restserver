@@ -20,14 +20,14 @@ app.get('/categoria', verificaToken, (req, res) => {
                     err
                 });
             }
-
+            console.log('test');
             res.json({
                 ok: true,
                 categorias
             });
 
         });
-
+        console.log('test');
 });
 
 app.get('/categoria/:id', verificaToken, (req, res) => {
