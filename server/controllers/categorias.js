@@ -51,17 +51,12 @@ app.get('/categoria/:id', verificaToken, (req, res) => {
                 }
             });
         }
-<<<<<<< HEAD
         console.log('test2');
-=======
-        console.log('test1');
->>>>>>> 0113d8b7eb60136b9774e3787798be94f3582a03
         res.json({
             ok: true,
             categoria
         })
     });
-<<<<<<< HEAD
     console.log('test2');
     console.log('test2');
 });
@@ -69,13 +64,6 @@ app.get('/categoria/:id', verificaToken, (req, res) => {
 app.post('/categoria', verificaToken, (req, res) => {
     console.log('test2');
     console.log('test2');
-=======
-    console.log('test1');
-});
-
-app.post('/categoria', verificaToken, (req, res) => {
-    console.log('test1');
->>>>>>> 0113d8b7eb60136b9774e3787798be94f3582a03
     let body = req.body;
 
     if (!body.nombre) {
