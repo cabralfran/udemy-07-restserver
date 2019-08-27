@@ -51,17 +51,19 @@ app.get('/categoria/:id', verificaToken, (req, res) => {
                 }
             });
         }
-
+        console.log('test2');
         res.json({
             ok: true,
             categoria
         })
     });
-
+    console.log('test2');
+    console.log('test2');
 });
 
 app.post('/categoria', verificaToken, (req, res) => {
-
+    console.log('test2');
+    console.log('test2');
     let body = req.body;
 
     if (!body.nombre) {
